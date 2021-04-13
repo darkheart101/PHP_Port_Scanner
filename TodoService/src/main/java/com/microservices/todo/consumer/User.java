@@ -10,7 +10,8 @@ public class User {
 
     @RabbitListener(queues = MessagingConfig.QUEUE)
     public void consumeMessageFromQueue(Todo todo){
-        System.out.println("Message Received from queue");
 
+        System.out.println("Message Received from queue");
+        System.out.println(todo);
     }
 }

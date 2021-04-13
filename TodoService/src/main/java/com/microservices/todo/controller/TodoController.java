@@ -4,6 +4,8 @@ import com.microservices.todo.config.MessagingConfig;
 import com.microservices.todo.dto.Todo;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,19 +19,13 @@ public class TodoController {
 
 
     @GetMapping(path = "/all", produces = "application/json")
-    public String getTodos(){
+    public ResponseEntity<Object> getTodos(){
         Todo todo = new Todo();
+        todo.setTodoId("x1x2");
         System.out.println("TEST TEST TEST");
         template.convertAndSend(MessagingConfig.EXCHANGE, MessagingConfig.ROUTING_KEY,todo);
-        return "DONE";
+        return new ResponseEntity<>("success", HttpStatus.OK);
     }
 
-    @GetMapping(path = "/xxx", produces = "application/json")
-    public String testController(){
-//        Todo todo = new Todo();
-//        System.out.println("TEST TEST TEST");
-//        template.convertAndSend(MessagingConfig.EXCHANGE, MessagingConfig.ROUTING_KEY,todo);
-        return "DONE";
-    }
 
 }

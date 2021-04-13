@@ -13,4 +13,8 @@ public class Todo {
     private String todo_id;
     private String title;
     private String description;
+
+    public void setTodoId(String id){
+        this.todo_id = id;
+    }
 }

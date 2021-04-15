@@ -30,8 +30,6 @@ class AuthController extends Controller
 
     public function verify(Request $request)
     {
-        $token = $request->only(['token']);
-
         try {
             $user = JWTAUth::parseToken()->authenticate();
             return response()->json(['success'=>true,'user'=>$user]);

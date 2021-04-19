@@ -1,10 +1,10 @@
-package com.microservices.todo;
+package io.tkouleris.ratingsservice;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class TodoApplicationTests {
+class RatingsServiceApplicationTests {
 
     @Test
     void contextLoads() {

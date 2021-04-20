@@ -1,6 +1,9 @@
 package io.tkouleris.ratingsservice.controller;
 
 import io.tkouleris.ratingsservice.dto.response.ApiResponse;
+import io.tkouleris.ratingsservice.entity.Rating;
+import io.tkouleris.ratingsservice.repository.IRatingRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -14,13 +17,14 @@ import java.util.List;
 @RequestMapping("/ratings")
 public class RatingsController {
 
+    @Autowired
+    private IRatingRepository ratingRepository;
+
     @GetMapping(path="/all", produces = "application/json")
     public ResponseEntity<Object> getAll(){
-        List<Integer> myList = new ArrayList<>();
-        myList.add(10000);
-        myList.add(60000);
+        List<Rating> ratings = (List<Rating>) ratingRepository.findAll();
         ApiResponse apiResponse = new ApiResponse();
-        apiResponse.setData(myList);
+        apiResponse.setData(ratings);
         apiResponse.setMessage("Ratings");
         return new ResponseEntity<>(apiResponse.getBodyResponse(), HttpStatus.OK);
     }

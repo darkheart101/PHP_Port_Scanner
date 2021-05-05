@@ -1,5 +1,6 @@
 package io.tkouleris.movieservice.controller;
 
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import io.tkouleris.movieservice.dto.otherResponse.RatingsResponse;
 import io.tkouleris.movieservice.dto.response.ApiResponse;
 import io.tkouleris.movieservice.dto.response.RatedMovie;
@@ -28,6 +29,7 @@ public class MoviesController {
     private IMovieRepository movieRepository;
 
     @GetMapping(path="/all", produces = "application/json")
+    @HystrixCommand(fallbackMethod = "getFallbackAllMovies")
     public ResponseEntity<Object> getAll(){
 
         RatingsResponse ratings = restTemplate.getForObject("http://ratings-service/ratings/all",RatingsResponse.class);
@@ -49,6 +51,12 @@ public class MoviesController {
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setData(ratedMovies);
         apiResponse.setMessage("Movies");
+        return new ResponseEntity<>(apiResponse.getBodyResponse(), HttpStatus.OK);
+    }
+
+    public ResponseEntity<Object> getFallbackAllMovies(){
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setMessage("No movies");
         return new ResponseEntity<>(apiResponse.getBodyResponse(), HttpStatus.OK);
     }
 }

@@ -1,8 +1,10 @@
 package io.tkouleris.movieservice.service;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.tkouleris.movieservice.dto.otherResponse.AuthResponse;
 import io.tkouleris.movieservice.entity.User;
 import org.springframework.http.*;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -49,15 +51,5 @@ public class Authentication {
     public User getLoggedInUser()
     {
         return this.loggedInUser;
-    }
-}
-
-class AuthResponse{
-    @JsonProperty("success")
-    public boolean success;
-    @JsonProperty("user")
-    public User user;
-
-    public AuthResponse() {
     }
 }

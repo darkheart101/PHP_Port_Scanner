@@ -37,18 +37,9 @@ public class MoviesController {
     @Autowired
     private IMovieRepository movieRepository;
 
-    @Autowired
-    private Authentication authentication;
-
     @GetMapping(path="/all", produces = "application/json")
-//    @HystrixCommand(fallbackMethod = "getFallbackAllMovies")
+    @HystrixCommand(fallbackMethod = "getFallbackAllMovies")
     public ResponseEntity<Object> getAll(){
-
-        if(!authentication.verify()){
-            ApiResponse apiResponse = new ApiResponse();
-            apiResponse.setMessage("Not Authenticated");
-            return new ResponseEntity<>(apiResponse.getBodyResponse(), HttpStatus.UNAUTHORIZED);
-        }
 
         RatingsResponse ratings = restTemplate.getForObject("http://ratings-service/ratings/all",RatingsResponse.class);
 

@@ -1,24 +1,19 @@
 package io.tkouleris.movieservice.service;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.tkouleris.movieservice.dto.otherResponse.AuthResponse;
 import io.tkouleris.movieservice.entity.User;
 import org.springframework.http.*;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-
-import javax.servlet.http.HttpServletRequest;
 
 @Service
 public class Authentication {
 
     private User loggedInUser;
 
-    public boolean  verify()
-    {
+    public boolean  verify() {
         String token = this.getToken();
         var entity = this.setHeaders(token);
         RestTemplate authRestTemplate = new RestTemplate();
@@ -35,13 +30,11 @@ public class Authentication {
         }
     }
 
-    private String getToken()
-    {
+    public String getToken() {
         return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization");
     }
 
-    private HttpEntity setHeaders(String token)
-    {
+    private HttpEntity setHeaders(String token) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization",token);
         headers.setContentType(MediaType.APPLICATION_JSON);

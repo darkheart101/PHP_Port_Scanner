@@ -12,6 +12,7 @@ import io.tkouleris.movieservice.entity.Rating;
 import io.tkouleris.movieservice.entity.User;
 import io.tkouleris.movieservice.repository.IMovieRepository;
 import io.tkouleris.movieservice.service.Authentication;
+import io.tkouleris.movieservice.service.RatingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
@@ -37,11 +38,21 @@ public class MoviesController {
     @Autowired
     private IMovieRepository movieRepository;
 
-    @GetMapping(path="/all", produces = "application/json")
-    @HystrixCommand(fallbackMethod = "getFallbackAllMovies")
-    public ResponseEntity<Object> getAll(){
+    @Autowired
+    private RatingService ratingService;
 
-        RatingsResponse ratings = restTemplate.getForObject("http://ratings-service/ratings/all",RatingsResponse.class);
+    @GetMapping(path="/all", produces = "application/json")
+    public ResponseEntity<Object> getAll(){
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1");
+
+        RatingsResponse ratings = ratingService.getAll();
+        System.out.println("33333333333333333333333333333333333333333333333");
+        if(ratings == null){
+            System.out.println("NULL");
+        }
+
+
+//        RatingsResponse ratings = restTemplate.getForObject("http://ratings-service/ratings/all",RatingsResponse.class);
 
         List<Movie> movies = (List<Movie>) movieRepository.findAll();
 
@@ -63,11 +74,11 @@ public class MoviesController {
         return new ResponseEntity<>(apiResponse.getBodyResponse(), HttpStatus.OK);
     }
 
-    public ResponseEntity<Object> getFallbackAllMovies(){
-        ApiResponse apiResponse = new ApiResponse();
-        apiResponse.setMessage("No movies");
-        return new ResponseEntity<>(apiResponse.getBodyResponse(), HttpStatus.OK);
-    }
+//    public ResponseEntity<Object> getFallbackAllMovies(){
+//        ApiResponse apiResponse = new ApiResponse();
+//        apiResponse.setMessage("No movies");
+//        return new ResponseEntity<>(apiResponse.getBodyResponse(), HttpStatus.OK);
+//    }
 }
 
 

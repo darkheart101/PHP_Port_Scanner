@@ -6,5 +6,4 @@ import io.tkouleris.movieservice.entity.User;
 public class AuthResponse {
     public boolean success;
     public User user;
-
 }

@@ -20,13 +20,15 @@ public class RatingService {
     private RestTemplate restTemplate;
 
     @Autowired
+    TokenService tokenService;
+
+    @Autowired
     private Authentication authentication;
 
     @HystrixCommand(fallbackMethod = "getFallbackAllMovies")
     public RatingsResponse getAll()
     {
-        System.out.println("RATINGS");
-        String token = authentication.getToken();
+        String token = getToken();
         var entity = this.setHeaders(token);
         ResponseEntity<RatingsResponse> response = restTemplate.exchange(
                 "http://ratings-service/ratings/all",
@@ -34,30 +36,23 @@ public class RatingService {
                 entity,
                 RatingsResponse.class
         );
-        System.out.println(response.getBody());
         return response.getBody();
     }
 
+    private String getToken(){
+        return tokenService.getToken();
+    }
+
     public RatingsResponse getFallbackAllMovies(){
-        System.out.println("FALLBACK");
         RatingsResponse response = new RatingsResponse();
-        System.out.println("FALLBACK_______1");
         Rating r = new Rating();
         r.setMovie_id(1L);
-        System.out.println("FALLBACK_______2");
         r.setId(1);
-        System.out.println("FALLBACK_______3");
         r.setRate(10.0);
-        System.out.println("FALLBACK_______4");
         List<Rating> arr = new ArrayList<>();
         arr.add(r);
         response.data = arr;
-        System.out.println("FALLBACK_______5");
-        response.message = "fallback";
-        System.out.println("FALLBACK_______6");
         response.timestamp = "xxx";
-        System.out.println("FALLBACK_______7");
-
 
         return response;
     }

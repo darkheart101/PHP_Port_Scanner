@@ -1,6 +1,7 @@
 package io.tkouleris.movieservice.interceptor;
 
 import io.tkouleris.movieservice.service.Authentication;
+import io.tkouleris.movieservice.service.TokenService;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -11,6 +12,8 @@ public class TokenInterceptor extends HandlerInterceptorAdapter {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        TokenService tokenService = TokenService.getInstance();
+        tokenService.setToken(authentication.getToken());
         if(!authentication.verify()){
             response.sendError(401,"Unauthorized");
             return false;

@@ -20,9 +20,6 @@ public class RatingService {
     private RestTemplate restTemplate;
 
     @Autowired
-    TokenService tokenService;
-
-    @Autowired
     private Authentication authentication;
 
     @HystrixCommand(fallbackMethod = "getFallbackAllMovies")
@@ -40,6 +37,8 @@ public class RatingService {
     }
 
     private String getToken(){
+        TokenService tokenService = TokenService.getInstance();
+        System.out.println(tokenService.getToken());
         return tokenService.getToken();
     }
 
@@ -59,6 +58,7 @@ public class RatingService {
 
     private HttpEntity setHeaders(String token) {
         HttpHeaders headers = new HttpHeaders();
+        System.out.println(token);
         headers.set("Authorization",token);
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new HttpEntity(headers);

@@ -1,4 +1,4 @@
-package io.tkouleris.movieservice.service;
+package io.tkouleris.ratingsservice.service;
 
 import org.springframework.stereotype.Service;
 

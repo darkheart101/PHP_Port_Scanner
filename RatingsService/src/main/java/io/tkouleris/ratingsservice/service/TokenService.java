@@ -8,7 +8,6 @@ public class TokenService {
     private static TokenService instance = null;
     private String token;
 
-
     private TokenService(){}
 
     public static TokenService getInstance(){

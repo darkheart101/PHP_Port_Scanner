@@ -38,7 +38,6 @@ public class RatingService {
 
     private String getToken(){
         TokenService tokenService = TokenService.getInstance();
-        System.out.println(tokenService.getToken());
         return tokenService.getToken();
     }
 

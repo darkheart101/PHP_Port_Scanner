@@ -2,6 +2,7 @@ package io.tkouleris.ratingsservice.interceptor;
 
 
 import io.tkouleris.ratingsservice.service.Authentication;
+import io.tkouleris.ratingsservice.service.LoggedUserService;
 import io.tkouleris.ratingsservice.service.TokenService;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import javax.servlet.http.HttpServletRequest;
@@ -15,6 +16,10 @@ public class TokenInterceptor extends HandlerInterceptorAdapter {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         TokenService tokenService = TokenService.getInstance();
         tokenService.setToken(authentication.getToken());
+
+        LoggedUserService loggedUserService = LoggedUserService.getInstance();
+        loggedUserService.setLoggedInUser(authentication.getLoggedInUser());
+
         if(!authentication.verify()){
             response.sendError(401,"Unauthorized");
             return false;

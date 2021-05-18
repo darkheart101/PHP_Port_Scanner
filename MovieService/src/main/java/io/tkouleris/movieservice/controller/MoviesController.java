@@ -29,8 +29,11 @@ public class MoviesController {
     @GetMapping(path="/all", produces = "application/json")
     public ResponseEntity<Object> getAll(){
         RatingsResponse ratings = ratingService.getAll();
-        if(ratings == null){
-            System.out.println("NULL");
+
+        if(ratings.data == null){
+            ApiResponse apiResponse = new ApiResponse();
+            apiResponse.setMessage("Movies");
+            return new ResponseEntity<>(apiResponse.getBodyResponse(), HttpStatus.OK);
         }
 
         List<Movie> movies = (List<Movie>) movieRepository.findAll();
@@ -52,12 +55,6 @@ public class MoviesController {
         apiResponse.setMessage("Movies");
         return new ResponseEntity<>(apiResponse.getBodyResponse(), HttpStatus.OK);
     }
-
-//    public ResponseEntity<Object> getFallbackAllMovies(){
-//        ApiResponse apiResponse = new ApiResponse();
-//        apiResponse.setMessage("No movies");
-//        return new ResponseEntity<>(apiResponse.getBodyResponse(), HttpStatus.OK);
-//    }
 }
 
 

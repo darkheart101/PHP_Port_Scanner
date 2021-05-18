@@ -13,19 +13,19 @@ public class Authentication {
 
     private User loggedInUser;
 
-    public boolean  verify() {
+    public boolean verify() {
         String token = this.getToken();
         var entity = this.setHeaders(token);
         RestTemplate authRestTemplate = new RestTemplate();
         try {
-            ResponseEntity<AuthResponse> response = authRestTemplate.exchange("http://127.0.0.1:8000/api/verify", HttpMethod.POST, entity,  AuthResponse.class);
-            if(response.getBody() != null){
+            ResponseEntity<AuthResponse> response = authRestTemplate.exchange("http://127.0.0.1:8000/api/verify", HttpMethod.POST, entity, AuthResponse.class);
+            if (response.getBody() != null) {
                 this.loggedInUser = response.getBody().user;
                 return true;
             }
             return false;
 
-        }catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
     }
@@ -36,13 +36,12 @@ public class Authentication {
 
     private HttpEntity setHeaders(String token) {
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization",token);
+        headers.set("Authorization", token);
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new HttpEntity(headers);
     }
 
-    public User getLoggedInUser()
-    {
+    public User getLoggedInUser() {
         return this.loggedInUser;
     }
 }

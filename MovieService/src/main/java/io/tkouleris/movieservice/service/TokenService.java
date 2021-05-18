@@ -9,17 +9,17 @@ public class TokenService {
     private String token;
 
 
-    private TokenService(){}
+    private TokenService() {
+    }
 
-    public static TokenService getInstance(){
-        if(TokenService.instance == null){
+    public static TokenService getInstance() {
+        if (TokenService.instance == null) {
             TokenService.instance = new TokenService();
         }
         return TokenService.instance;
     }
 
-    public void setToken(String token)
-    {
+    public void setToken(String token) {
         this.token = token;
     }
 

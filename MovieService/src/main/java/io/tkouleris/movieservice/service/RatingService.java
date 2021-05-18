@@ -19,12 +19,8 @@ public class RatingService {
     @Autowired
     private RestTemplate restTemplate;
 
-    @Autowired
-    private Authentication authentication;
-
     @HystrixCommand(fallbackMethod = "getFallbackAllMovies")
-    public RatingsResponse getAll()
-    {
+    public RatingsResponse getAll() {
         String token = getToken();
         var entity = this.setHeaders(token);
         ResponseEntity<RatingsResponse> response = restTemplate.exchange(
@@ -36,12 +32,12 @@ public class RatingService {
         return response.getBody();
     }
 
-    private String getToken(){
+    private String getToken() {
         TokenService tokenService = TokenService.getInstance();
         return tokenService.getToken();
     }
 
-    public RatingsResponse getFallbackAllMovies(){
+    public RatingsResponse getFallbackAllMovies() {
         RatingsResponse response = new RatingsResponse();
         Rating r = new Rating();
         r.setMovie_id(1L);
@@ -57,8 +53,7 @@ public class RatingService {
 
     private HttpEntity setHeaders(String token) {
         HttpHeaders headers = new HttpHeaders();
-        System.out.println(token);
-        headers.set("Authorization",token);
+        headers.set("Authorization", token);
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new HttpEntity(headers);
     }

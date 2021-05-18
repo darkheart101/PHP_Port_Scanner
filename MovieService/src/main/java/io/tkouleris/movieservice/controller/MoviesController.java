@@ -26,8 +26,8 @@ public class MoviesController {
     @Autowired
     private RatingService ratingService;
 
-    @GetMapping(path="/all", produces = "application/json")
-    public ResponseEntity<Object> getAll(){
+    @GetMapping(path="/rated", produces = "application/json")
+    public ResponseEntity<Object> getRatedMovies(){
         RatingsResponse ratings = ratingService.getAll();
 
         if(ratings.data == null){
@@ -53,6 +53,49 @@ public class MoviesController {
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setData(ratedMovies);
         apiResponse.setMessage("Movies");
+        return new ResponseEntity<>(apiResponse.getBodyResponse(), HttpStatus.OK);
+    }
+
+    @GetMapping(path="/unrated", produces = "application/json")
+    public ResponseEntity<Object> getUratedMovies(){
+        List<Movie> movies = (List<Movie>) movieRepository.findAll();
+        RatingsResponse ratings = ratingService.getAll();
+
+        if(ratings.data == null){
+            ApiResponse apiResponse = new ApiResponse();
+            apiResponse.setData(movies);
+            apiResponse.setMessage("Unrated movies");
+            return new ResponseEntity<>(apiResponse.getBodyResponse(), HttpStatus.OK);
+        }
+
+        List<RatedMovie> ratedMovies = new ArrayList<>();
+        List<Movie> excludedMovies = new ArrayList<>();
+        for (Rating rating : ratings.data) {
+            for (Movie movie : movies) {
+                if(rating.getMovie_id() == movie.getId()){
+                    excludedMovies.add(movie);
+                }
+            }
+        }
+
+
+        for(Movie movie : movies){
+            boolean isRated = false;
+            for(Movie excludedMovie: excludedMovies){
+                if(movie.getId() == excludedMovie.getId()){
+                    isRated = true;
+                }
+            }
+            if(!isRated){
+                RatedMovie ratedMovie = new RatedMovie();
+                ratedMovie.id = movie.getId();
+                ratedMovie.title = movie.getTitle();
+                ratedMovies.add(ratedMovie);
+            }
+        }
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setData(ratedMovies);
+        apiResponse.setMessage("Unrated movies");
         return new ResponseEntity<>(apiResponse.getBodyResponse(), HttpStatus.OK);
     }
 }

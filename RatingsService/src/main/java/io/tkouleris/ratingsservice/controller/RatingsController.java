@@ -4,6 +4,7 @@ import io.tkouleris.ratingsservice.dto.request.RatingDto;
 import io.tkouleris.ratingsservice.dto.response.ApiResponse;
 import io.tkouleris.ratingsservice.entity.Rating;
 import io.tkouleris.ratingsservice.entity.User;
+import io.tkouleris.ratingsservice.exception.NotFoundException;
 import io.tkouleris.ratingsservice.repository.IRatingRepository;
 import io.tkouleris.ratingsservice.service.LoggedUserService;
 import io.tkouleris.ratingsservice.service.RatingService;
@@ -45,7 +46,7 @@ public class RatingsController {
     }
 
     @PostMapping(path="/rate", produces = "application/json")
-    public ResponseEntity<Object> store(@RequestBody RatingDto ratingDto){
+    public ResponseEntity<Object> store(@RequestBody RatingDto ratingDto) throws NotFoundException {
         User loggedInUser = LoggedUserService.getInstance().getLoggedInUser();
         Rating rating = this.ratingService.createOrUpdate(loggedInUser,ratingDto);
         ApiResponse apiResponse = new ApiResponse();

@@ -6,11 +6,13 @@ import io.tkouleris.movieservice.dto.response.RatedMovie;
 import io.tkouleris.movieservice.entity.Movie;
 import io.tkouleris.movieservice.entity.Rating;
 import io.tkouleris.movieservice.repository.IMovieRepository;
+import io.tkouleris.movieservice.service.MovieService;
 import io.tkouleris.movieservice.service.RatingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +27,9 @@ public class MoviesController {
 
     @Autowired
     private RatingService ratingService;
+
+    @Autowired
+    private MovieService movieService;
 
     @GetMapping(path="/rated", produces = "application/json")
     public ResponseEntity<Object> getRatedMovies(){
@@ -57,7 +62,7 @@ public class MoviesController {
     }
 
     @GetMapping(path="/unrated", produces = "application/json")
-    public ResponseEntity<Object> getUratedMovies(){
+    public ResponseEntity<Object> getUnratedMovies(){
         List<Movie> movies = (List<Movie>) movieRepository.findAll();
         RatingsResponse ratings = ratingService.getAll();
 
@@ -96,6 +101,16 @@ public class MoviesController {
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setData(ratedMovies);
         apiResponse.setMessage("Unrated movies");
+        return new ResponseEntity<>(apiResponse.getBodyResponse(), HttpStatus.OK);
+    }
+
+    @GetMapping(path="/{movieId}", produces = "application/json")
+    public ResponseEntity<Object> getMovie(@PathVariable("movieId") long movieId){
+
+        Movie movie = this.movieService.getMovie(movieId);
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setData(movie);
+        apiResponse.setMessage("Movie");
         return new ResponseEntity<>(apiResponse.getBodyResponse(), HttpStatus.OK);
     }
 }

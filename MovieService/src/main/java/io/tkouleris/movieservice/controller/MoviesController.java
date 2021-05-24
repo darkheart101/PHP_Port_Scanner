@@ -14,6 +14,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +34,7 @@ public class MoviesController {
     private MovieService movieService;
 
     @GetMapping(path="/rated", produces = "application/json")
-    public ResponseEntity<Object> getRatedMovies(){
+    public ResponseEntity<Object> getRatedMovies() throws IOException {
         RatingsResponse ratings = ratingService.getAll();
 
         if(ratings.data == null){
@@ -62,7 +64,7 @@ public class MoviesController {
     }
 
     @GetMapping(path="/unrated", produces = "application/json")
-    public ResponseEntity<Object> getUnratedMovies(){
+    public ResponseEntity<Object> getUnratedMovies() throws IOException {
         List<Movie> movies = (List<Movie>) movieRepository.findAll();
         RatingsResponse ratings = ratingService.getAll();
 

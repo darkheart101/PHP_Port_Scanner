@@ -8,4 +8,12 @@ public class RatingsResponse {
     public List<Rating> data;
     public String timestamp;
     public String message;
+
+    public String toString() {
+        return "{"
+                +" \"timestamp\" : \"" +timestamp+"\","
+                +" \"message\":\""+message+"\","
+                +" \"data:\":"+data.toString()
+        +"}";
+    }
 }

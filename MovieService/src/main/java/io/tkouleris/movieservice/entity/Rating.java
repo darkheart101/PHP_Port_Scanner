@@ -1,9 +1,5 @@
 package io.tkouleris.movieservice.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-
 public class Rating {
 
     private long Id;
@@ -11,6 +7,12 @@ public class Rating {
     private Long movie_id;
 
     private double rate;
+
+    private long userId;
+
+    public long getUserId() {
+        return userId;
+    }
 
     public long getId() {
         return Id;
@@ -34,5 +36,10 @@ public class Rating {
 
     public void setRate(double rate) {
         this.rate = rate;
+    }
+
+    public String toString()
+    {
+        return "{ \"movie_id\":" + getMovie_id() +", \"rate\": "+getRate()+",\"userId\":"+getUserId()+", \"id\": "+getId()+"}";
     }
 }

@@ -1,14 +1,19 @@
 package io.tkouleris.movieservice.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Rating {
+    @JsonProperty("id")
+    public long Id;
 
-    private long Id;
+    @JsonProperty("movie_id")
+    public Long movie_id;
 
-    private Long movie_id;
+    @JsonProperty("rate")
+    public double rate;
 
-    private double rate;
-
-    private long userId;
+    @JsonProperty("userId")
+    public long userId;
 
     public long getUserId() {
         return userId;

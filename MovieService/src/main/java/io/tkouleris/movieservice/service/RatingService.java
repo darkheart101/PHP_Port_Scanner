@@ -2,6 +2,7 @@ package io.tkouleris.movieservice.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import io.tkouleris.movieservice.dto.otherResponse.AuthResponse;
@@ -15,7 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -27,6 +30,7 @@ public class RatingService {
 
     @HystrixCommand(fallbackMethod = "getFallbackAllMovies")
     public RatingsResponse getAll() throws IOException {
+        System.out.println("NORMAL 1");
         String token = getToken();
         var entity = this.setHeaders(token);
         ResponseEntity<RatingsResponse> response = restTemplate.exchange(
@@ -35,10 +39,13 @@ public class RatingService {
                 entity,
                 RatingsResponse.class
         );
+        System.out.println("NORMAL 2");
         // cache
         FileWriter myWriter = new FileWriter("/MyWork/Projects/Microservices/MicroservicesExample/cache/test.json");
-        JSONObject json = new JSONObject(response.getBody().toString());
-        myWriter.write(json.toString());
+        System.out.println(response.getBody().toString());
+//        JSONObject json = new JSONObject(response.getBody().toString());
+        System.out.println("NORMAL 3");
+        myWriter.write(response.getBody().toString());
         myWriter.close();
 
         return response.getBody();
@@ -50,33 +57,23 @@ public class RatingService {
     }
 
     public RatingsResponse getFallbackAllMovies() throws FileNotFoundException, JsonProcessingException {
+        System.out.println("============================ FALLBACK =====================================");
         File file = new File("/MyWork/Projects/Microservices/MicroservicesExample/cache/test.json");
         Scanner myReader = new Scanner(file);
         RatingsResponse ratingsResponse = new RatingsResponse();
+        Rating[] ratings = new Rating[0];
         while (myReader.hasNextLine()) {
             String response = myReader.nextLine();
             ObjectMapper objectMapper = new ObjectMapper();
-//            objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-            ratingsResponse = objectMapper.readValue(response, RatingsResponse.class);
-            for (Rating r : ratingsResponse.data) {
-
-                System.out.println(r);
-
-            }
+            objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+            ratings = objectMapper.readValue(response, Rating[].class);
         }
-
+        ratingsResponse.data = new ArrayList<>();
+        ratingsResponse.data.addAll(Arrays.asList(ratings));
+        ratingsResponse.message = "Ratings";
+        ratingsResponse.timestamp = LocalDateTime.now().toString();
         return ratingsResponse;
-//        RatingsResponse response = new RatingsResponse();
-//        Rating r = new Rating();
-//        r.setMovie_id(1L);
-//        r.setId(1);
-//        r.setRate(10.0);
-//        List<Rating> arr = new ArrayList<>();
-//        arr.add(r);
-//        response.data = arr;
-//        response.timestamp = "xxx";
-//
-//        return response;
+
     }
 
     private HttpEntity setHeaders(String token) {

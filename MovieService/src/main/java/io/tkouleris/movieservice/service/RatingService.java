@@ -28,9 +28,11 @@ public class RatingService {
     @Autowired
     private RestTemplate restTemplate;
 
+    @Autowired
+    private CacheService cacheService;
+
     @HystrixCommand(fallbackMethod = "getFallbackAllMovies")
     public RatingsResponse getAll() throws IOException {
-        System.out.println("NORMAL 1");
         String token = getToken();
         var entity = this.setHeaders(token);
         ResponseEntity<RatingsResponse> response = restTemplate.exchange(
@@ -39,14 +41,8 @@ public class RatingService {
                 entity,
                 RatingsResponse.class
         );
-        System.out.println("NORMAL 2");
         // cache
-        FileWriter myWriter = new FileWriter("/MyWork/Projects/Microservices/MicroservicesExample/cache/test.json");
-        System.out.println(response.getBody().toString());
-//        JSONObject json = new JSONObject(response.getBody().toString());
-        System.out.println("NORMAL 3");
-        myWriter.write(response.getBody().toString());
-        myWriter.close();
+        this.cacheService.save(response.getBody().toString(),"test");
 
         return response.getBody();
     }
@@ -57,19 +53,26 @@ public class RatingService {
     }
 
     public RatingsResponse getFallbackAllMovies() throws FileNotFoundException, JsonProcessingException {
-        System.out.println("============================ FALLBACK =====================================");
-        File file = new File("/MyWork/Projects/Microservices/MicroservicesExample/cache/test.json");
-        Scanner myReader = new Scanner(file);
-        RatingsResponse ratingsResponse = new RatingsResponse();
+        System.out.println(Rating.class);
+//        File file = new File("/MyWork/Projects/Microservices/MicroservicesExample/cache/test.json");
+//        Scanner myReader = new Scanner(file);
+//        RatingsResponse ratingsResponse = new RatingsResponse();
+//        Rating[] ratings = new Rating[0];
+//        while (myReader.hasNextLine()) {
+//            String response = myReader.nextLine();
+//            ObjectMapper objectMapper = new ObjectMapper();
+//            objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+//            ratings = objectMapper.readValue(response, Rating[].class);
+//        }
         Rating[] ratings = new Rating[0];
-        while (myReader.hasNextLine()) {
-            String response = myReader.nextLine();
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-            ratings = objectMapper.readValue(response, Rating[].class);
-        }
+//        ratings = this.cacheService.getKey("test", ratings);
+//        for(Rating r: ratings){
+//            System.out.println(r.Id);
+//            System.out.println(r.rate);
+//        }
+        RatingsResponse ratingsResponse = new RatingsResponse();
         ratingsResponse.data = new ArrayList<>();
-        ratingsResponse.data.addAll(Arrays.asList(ratings));
+//        ratingsResponse.data.addAll(Arrays.asList(ratings));
         ratingsResponse.message = "Ratings";
         ratingsResponse.timestamp = LocalDateTime.now().toString();
         return ratingsResponse;

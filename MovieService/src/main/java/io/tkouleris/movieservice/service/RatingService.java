@@ -52,27 +52,13 @@ public class RatingService {
         return tokenService.getToken();
     }
 
-    public RatingsResponse getFallbackAllMovies() throws FileNotFoundException, JsonProcessingException {
-        System.out.println(Rating.class);
-//        File file = new File("/MyWork/Projects/Microservices/MicroservicesExample/cache/test.json");
-//        Scanner myReader = new Scanner(file);
-//        RatingsResponse ratingsResponse = new RatingsResponse();
-//        Rating[] ratings = new Rating[0];
-//        while (myReader.hasNextLine()) {
-//            String response = myReader.nextLine();
-//            ObjectMapper objectMapper = new ObjectMapper();
-//            objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-//            ratings = objectMapper.readValue(response, Rating[].class);
-//        }
+    public RatingsResponse getFallbackAllMovies() throws FileNotFoundException, JsonProcessingException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+
         Rating[] ratings = new Rating[0];
-//        ratings = this.cacheService.getKey("test", ratings);
-//        for(Rating r: ratings){
-//            System.out.println(r.Id);
-//            System.out.println(r.rate);
-//        }
+        ratings = (Rating[]) this.cacheService.getKey("test", ratings, Rating[].class);
         RatingsResponse ratingsResponse = new RatingsResponse();
         ratingsResponse.data = new ArrayList<>();
-//        ratingsResponse.data.addAll(Arrays.asList(ratings));
+        ratingsResponse.data.addAll(Arrays.asList(ratings));
         ratingsResponse.message = "Ratings";
         ratingsResponse.timestamp = LocalDateTime.now().toString();
         return ratingsResponse;

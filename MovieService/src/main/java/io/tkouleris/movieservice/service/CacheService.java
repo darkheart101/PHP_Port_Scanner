@@ -3,8 +3,6 @@ package io.tkouleris.movieservice.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.tkouleris.movieservice.dto.otherResponse.RatingsResponse;
-import io.tkouleris.movieservice.entity.Rating;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -22,13 +20,9 @@ public class CacheService<T> {
         myWriter.close();
     }
 
-    public <T> T getKey(String key, Class<T> classpath) throws FileNotFoundException, JsonProcessingException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+    public <T> T getKey(String key, T obj, Class<T> classpath) throws FileNotFoundException, JsonProcessingException, ClassNotFoundException, InstantiationException, IllegalAccessException {
         File file = new File("/MyWork/Projects/Microservices/MicroservicesExample/cache/"+key+".json");
         Scanner myReader = new Scanner(file);
-//        RatingsResponse ratingsResponse = new RatingsResponse();
-//        Object obj = new <Object>;
-//        Rating[] ratings = new Rating[0];
-//        Object obj = Class.forName(classpath).newInstance();
         while (myReader.hasNextLine()) {
             String response = myReader.nextLine();
             ObjectMapper objectMapper = new ObjectMapper();

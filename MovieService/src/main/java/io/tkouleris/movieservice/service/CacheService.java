@@ -3,6 +3,9 @@ package io.tkouleris.movieservice.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.tkouleris.movieservice.config.CacheConfiguration;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -13,15 +16,18 @@ import java.util.Scanner;
 
 @Service
 public class CacheService<T> {
+    @Value("${cachefolder}")
+    private String cacheDirectory;
 
     public void save(String data, String key) throws IOException {
-        FileWriter myWriter = new FileWriter("/MyWork/Projects/Microservices/MicroservicesExample/cache/"+key+".json");
+
+        FileWriter myWriter = new FileWriter(cacheDirectory+key+".json");
         myWriter.write(data);
         myWriter.close();
     }
 
     public <T> T getKey(String key, T obj, Class<T> classpath) throws FileNotFoundException, JsonProcessingException, ClassNotFoundException, InstantiationException, IllegalAccessException {
-        File file = new File("/MyWork/Projects/Microservices/MicroservicesExample/cache/"+key+".json");
+        File file = new File(cacheDirectory + key +".json");
         Scanner myReader = new Scanner(file);
         while (myReader.hasNextLine()) {
             String response = myReader.nextLine();

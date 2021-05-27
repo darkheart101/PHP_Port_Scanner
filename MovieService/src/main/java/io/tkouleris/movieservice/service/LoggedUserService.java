@@ -18,10 +18,10 @@ public class LoggedUserService {
     }
 
     public void setLoggedInUser(User loggedInUser) {
-        this.loggedInUser = loggedInUser;
+        LoggedUserService.instance.loggedInUser = loggedInUser;
     }
 
     public User getLoggedInUser() {
-        return this.loggedInUser;
+        return LoggedUserService.instance.loggedInUser;
     }
 }

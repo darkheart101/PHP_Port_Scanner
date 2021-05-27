@@ -9,6 +9,7 @@ import io.tkouleris.movieservice.dto.otherResponse.AuthResponse;
 import io.tkouleris.movieservice.dto.otherResponse.RatingsResponse;
 import io.tkouleris.movieservice.dto.response.ApiResponse;
 import io.tkouleris.movieservice.entity.Rating;
+import io.tkouleris.movieservice.entity.User;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -19,8 +20,7 @@ import java.io.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
+
 
 @Service
 public class RatingService {
@@ -30,6 +30,8 @@ public class RatingService {
 
     @Autowired
     private CacheService cacheService;
+
+
 
     @HystrixCommand(fallbackMethod = "getFallbackAllMovies")
     public RatingsResponse getAll() throws IOException {
@@ -42,7 +44,9 @@ public class RatingService {
                 RatingsResponse.class
         );
         // cache
-        this.cacheService.save(response.getBody().toString(),"test");
+        LoggedUserService loggedUserService = LoggedUserService.getInstance();
+        User user = loggedUserService.getLoggedInUser();
+        this.cacheService.save(response.getBody().toString(),String.valueOf(user.getId())+"_all_ratings");
 
         return response.getBody();
     }
@@ -53,9 +57,11 @@ public class RatingService {
     }
 
     public RatingsResponse getFallbackAllMovies() throws FileNotFoundException, JsonProcessingException, ClassNotFoundException, InstantiationException, IllegalAccessException {
-
+        System.out.println("========================= FALLBACK ================================");
+        LoggedUserService loggedUserService = LoggedUserService.getInstance();
+        User user = loggedUserService.getLoggedInUser();
         Rating[] ratings = new Rating[0];
-        ratings = (Rating[]) this.cacheService.getKey("test", ratings, Rating[].class);
+        ratings = (Rating[]) this.cacheService.getKey(String.valueOf(user.getId())+"_all_ratings", ratings, Rating[].class);
         RatingsResponse ratingsResponse = new RatingsResponse();
         ratingsResponse.data = new ArrayList<>();
         ratingsResponse.data.addAll(Arrays.asList(ratings));

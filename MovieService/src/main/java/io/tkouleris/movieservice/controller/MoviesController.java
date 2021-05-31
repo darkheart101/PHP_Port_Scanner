@@ -107,9 +107,23 @@ public class MoviesController {
     }
 
     @GetMapping(path="/{movieId}", produces = "application/json")
-    public ResponseEntity<Object> getMovie(@PathVariable("movieId") long movieId){
+    public ResponseEntity<Object> getMovie(@PathVariable("movieId") long movieId) throws IOException {
 
         Movie movie = this.movieService.getMovie(movieId);
+        RatingsResponse ratingsResponse = this.ratingService.getMovieRating(movieId);
+        if(ratingsResponse.data.get(0) != null){
+            RatedMovie ratedMovie = new RatedMovie();
+            ratedMovie.id = movie.getId();
+            ratedMovie.title = movie.getTitle();
+            ratedMovie.rate = ratingsResponse.data.get(0).rate;
+
+            ApiResponse apiResponse = new ApiResponse();
+            apiResponse.setData(ratedMovie);
+            apiResponse.setMessage("Movie");
+            return new ResponseEntity<>(apiResponse.getBodyResponse(), HttpStatus.OK);
+        }
+
+
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setData(movie);
         apiResponse.setMessage("Movie");

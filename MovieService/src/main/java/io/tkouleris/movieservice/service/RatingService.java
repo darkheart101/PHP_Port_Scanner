@@ -51,6 +51,25 @@ public class RatingService {
         return response.getBody();
     }
 
+    @HystrixCommand(fallbackMethod = "getFallbackMovie")
+    public RatingsResponse getMovieRating(long movie_id) throws IOException {
+        String token = getToken();
+        var entity = this.setHeaders(token);
+        ResponseEntity<RatingsResponse> response = restTemplate.exchange(
+                "http://ratings-service/ratings/movie/"+movie_id,
+                HttpMethod.GET,
+                entity,
+                RatingsResponse.class
+        );
+
+        // cache
+        LoggedUserService loggedUserService = LoggedUserService.getInstance();
+        User user = loggedUserService.getLoggedInUser();
+        this.cacheService.save(response.getBody().toString(),String.valueOf(user.getId())+"_"+String.valueOf(movie_id)+"_movie_rating");
+
+        return response.getBody();
+    }
+
     private String getToken() {
         TokenService tokenService = TokenService.getInstance();
         return tokenService.getToken();
@@ -69,6 +88,21 @@ public class RatingService {
         ratingsResponse.timestamp = LocalDateTime.now().toString();
         return ratingsResponse;
 
+    }
+
+    public RatingsResponse getFallbackMovie(long movie_id) throws FileNotFoundException, JsonProcessingException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+        System.out.println("========================= FALLBACK MOVIE ================================");
+        LoggedUserService loggedUserService = LoggedUserService.getInstance();
+        User user = loggedUserService.getLoggedInUser();
+        Rating rating = new Rating();
+        rating = (Rating) this.cacheService.getKey(String.valueOf(user.getId())+"_"+String.valueOf(movie_id)+"_movie_rating", rating, Rating.class);
+        System.out.println(rating);
+        RatingsResponse ratingsResponse = new RatingsResponse();
+        ratingsResponse.data = new ArrayList<>();
+        ratingsResponse.data.addAll(Arrays.asList(rating));
+        ratingsResponse.message = "Ratings";
+        ratingsResponse.timestamp = LocalDateTime.now().toString();
+        return ratingsResponse;
     }
 
     private HttpEntity setHeaders(String token) {

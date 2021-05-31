@@ -14,16 +14,17 @@ public class TokenInterceptor extends HandlerInterceptorAdapter {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        if(!authentication.verify()){
+            response.sendError(401,"Unauthorized");
+            return false;
+        }
+
         TokenService tokenService = TokenService.getInstance();
         tokenService.setToken(authentication.getToken());
 
         LoggedUserService loggedUserService = LoggedUserService.getInstance();
         loggedUserService.setLoggedInUser(authentication.getLoggedInUser());
 
-        if(!authentication.verify()){
-            response.sendError(401,"Unauthorized");
-            return false;
-        }
         return super.preHandle(request, response, handler);
     }
 }

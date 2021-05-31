@@ -17,17 +17,17 @@ import java.util.Scanner;
 @Service
 public class CacheService<T> {
     @Value("${cachefolder}")
-    private String cacheDirectory;
+    private String cachefolder;
 
     public void save(String data, String key) throws IOException {
 
-        FileWriter myWriter = new FileWriter(cacheDirectory+key+".json");
+        FileWriter myWriter = new FileWriter(cachefolder+key+".json");
         myWriter.write(data);
         myWriter.close();
     }
 
     public <T> T getKey(String key, T obj, Class<T> classpath) throws FileNotFoundException, JsonProcessingException, ClassNotFoundException, InstantiationException, IllegalAccessException {
-        File file = new File(cacheDirectory + key +".json");
+        File file = new File(cachefolder + key +".json");
         Scanner myReader = new Scanner(file);
         while (myReader.hasNextLine()) {
             String response = myReader.nextLine();

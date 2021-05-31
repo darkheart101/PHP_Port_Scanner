@@ -12,11 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -52,6 +50,25 @@ public class RatingsController {
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setData(rating);
         apiResponse.setMessage("rating");
+        return new ResponseEntity<>(apiResponse.getBodyResponse(), HttpStatus.OK);
+    }
+
+    @GetMapping(path="/movie/{movie_id}", produces = "application/json")
+    public ResponseEntity<Object> getMovieRating(@PathVariable("movie_id") long movie_id){
+        LoggedUserService loggedUserService = LoggedUserService.getInstance();
+        User loggedInUser = loggedUserService.getLoggedInUser();
+        if(loggedInUser == null){
+            System.out.println("============================= ERROR =================================");
+            ApiResponse apiResponse = new ApiResponse();
+            apiResponse.setMessage("Ratings");
+            return new ResponseEntity<>(apiResponse.getBodyResponse(), HttpStatus.OK);
+        }
+        Rating rating = ratingRepository.findRatingByUserAndMovie((long)loggedInUser.getId(),movie_id).orElse(null);
+        List<Rating> ratings = new ArrayList<>();
+        ratings.add(rating);
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setData(ratings);
+        apiResponse.setMessage("Movie Rating");
         return new ResponseEntity<>(apiResponse.getBodyResponse(), HttpStatus.OK);
     }
 

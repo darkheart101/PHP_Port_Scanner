@@ -8,7 +8,6 @@ import io.tkouleris.movieservice.entity.Rating;
 import io.tkouleris.movieservice.repository.IMovieRepository;
 import io.tkouleris.movieservice.service.MovieService;
 import io.tkouleris.movieservice.service.RatingService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,14 +23,17 @@ import java.util.List;
 @RequestMapping("/movies")
 public class MoviesController {
 
-    @Autowired
-    private IMovieRepository movieRepository;
+    private final IMovieRepository movieRepository;
 
-    @Autowired
-    private RatingService ratingService;
+    private final RatingService ratingService;
 
-    @Autowired
-    private MovieService movieService;
+    private final MovieService movieService;
+
+    public MoviesController(IMovieRepository movieRepository, RatingService ratingService, MovieService movieService) {
+        this.movieRepository = movieRepository;
+        this.ratingService = ratingService;
+        this.movieService = movieService;
+    }
 
     @GetMapping(path="/rated", produces = "application/json")
     public ResponseEntity<Object> getRatedMovies() throws IOException {
@@ -91,6 +93,7 @@ public class MoviesController {
             for(Movie excludedMovie: excludedMovies){
                 if(movie.getId() == excludedMovie.getId()){
                     isRated = true;
+                    break;
                 }
             }
             if(!isRated){

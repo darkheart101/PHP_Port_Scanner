@@ -3,8 +3,6 @@ package io.tkouleris.movieservice.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.tkouleris.movieservice.config.CacheConfiguration;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +13,7 @@ import java.io.IOException;
 import java.util.Scanner;
 
 @Service
-public class CacheService<T> {
+public class CacheService {
     @Value("${cachefolder}")
     private String cachefolder;
 
@@ -26,7 +24,7 @@ public class CacheService<T> {
         myWriter.close();
     }
 
-    public <T> T getKey(String key, T obj, Class<T> classpath) throws FileNotFoundException, JsonProcessingException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+    public <T> T getKey(String key, T obj, Class<T> classpath) throws FileNotFoundException, JsonProcessingException {
         File file = new File(cachefolder + key +".json");
         Scanner myReader = new Scanner(file);
         while (myReader.hasNextLine()) {
@@ -36,6 +34,6 @@ public class CacheService<T> {
             obj = objectMapper.readValue(response, classpath);
         }
 
-        return (T)obj;
+        return obj;
     }
 }

@@ -22,18 +22,14 @@ public class RatingService {
 
     private final RatingFallbackService ratingFallbackService;
 
-    private final User loggedInUser;
-
     public RatingService(RestTemplate restTemplate, CacheService cacheService, RatingFallbackService ratingFallbackService) {
         this.restTemplate = restTemplate;
         this.cacheService = cacheService;
         this.ratingFallbackService = ratingFallbackService;
-        LoggedUserService loggedUserService = LoggedUserService.getInstance();
-        this.loggedInUser = loggedUserService.getLoggedInUser();
     }
 
 
-    @HystrixCommand(fallbackMethod = "getFallbackAllMovies")
+//    @HystrixCommand(fallbackMethod = "getFallbackAllMovies")
     public RatingsResponse getAll() throws IOException {
         String token = getToken();
         var entity = this.setHeaders(token);
@@ -43,9 +39,9 @@ public class RatingService {
                 entity,
                 RatingsResponse.class
         );
-
-        // cache
-        this.cacheService.save(Objects.requireNonNull(response.getBody()).toString(), this.loggedInUser.getId() + "_all_ratings");
+        LoggedUserService loggedUserService = LoggedUserService.getInstance();
+        User loggedInUser = loggedUserService.getLoggedInUser();
+        this.cacheService.save(Objects.requireNonNull(response.getBody()).toString(), loggedInUser.getId() + "_all_ratings");
 
         return response.getBody();
     }
@@ -60,7 +56,9 @@ public class RatingService {
                 entity,
                 RatingsResponse.class
         );
-        this.cacheService.save(Objects.requireNonNull(response.getBody()).toString(), this.loggedInUser.getId() + "_" + movie_id + "_movie_rating");
+        LoggedUserService loggedUserService = LoggedUserService.getInstance();
+        User loggedInUser = loggedUserService.getLoggedInUser();
+        this.cacheService.save(Objects.requireNonNull(response.getBody()).toString(), loggedInUser.getId() + "_" + movie_id + "_movie_rating");
 
         return response.getBody();
     }

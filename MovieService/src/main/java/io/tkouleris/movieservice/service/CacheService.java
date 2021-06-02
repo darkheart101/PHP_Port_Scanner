@@ -18,7 +18,6 @@ public class CacheService {
     private String cachefolder;
 
     public void save(String data, String key) throws IOException {
-
         FileWriter myWriter = new FileWriter(cachefolder+key+".json");
         myWriter.write(data);
         myWriter.close();

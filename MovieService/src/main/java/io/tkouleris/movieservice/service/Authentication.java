@@ -4,29 +4,30 @@ import io.tkouleris.movieservice.dto.otherResponse.AuthResponse;
 import io.tkouleris.movieservice.entity.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.Objects;
 
-@Service
+@Component
 public class Authentication {
 
     private User loggedInUser;
+    private final String authBaseUrl;
 
-    @Value("${myauth.baseurl}")
-    private String authBaseUrl;
+    public Authentication(@Value("${myauth.baseurl}") String authBaseUrl) {
+        this.authBaseUrl = authBaseUrl;
+    }
 
     public boolean verify() {
         String token = this.getToken();
         var entity = this.setHeaders(token);
         RestTemplate authRestTemplate = new RestTemplate();
 
-        System.out.println(this.authBaseUrl+"/api/verify");
         try {
-            ResponseEntity<AuthResponse> response = authRestTemplate.exchange("http://127.0.0.1:8000"+"/api/verify", HttpMethod.POST, entity, AuthResponse.class);
+            ResponseEntity<AuthResponse> response = authRestTemplate.exchange(this.authBaseUrl + "/api/verify", HttpMethod.POST, entity, AuthResponse.class);
             if (response.getBody() != null) {
                 this.loggedInUser = response.getBody().user;
                 return true;

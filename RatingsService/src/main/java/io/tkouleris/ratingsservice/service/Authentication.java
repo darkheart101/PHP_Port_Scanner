@@ -3,6 +3,7 @@ package io.tkouleris.ratingsservice.service;
 
 import io.tkouleris.ratingsservice.dto.otherResponse.AuthResponse;
 import io.tkouleris.ratingsservice.entity.User;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -13,13 +14,18 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 public class Authentication {
 
     private User loggedInUser;
+    private final String authBaseUrl;
+
+    public Authentication(@Value("${myauth.baseurl}") String authBaseUrl) {
+        this.authBaseUrl = authBaseUrl;
+    }
 
     public boolean  verify() {
         String token = this.getToken();
         var entity = this.setHeaders(token);
         RestTemplate authRestTemplate = new RestTemplate();
         try {
-            ResponseEntity<AuthResponse> response = authRestTemplate.exchange("http://127.0.0.1:8000/api/verify", HttpMethod.POST, entity,  AuthResponse.class);
+            ResponseEntity<AuthResponse> response = authRestTemplate.exchange(this.authBaseUrl + "/api/verify", HttpMethod.POST, entity,  AuthResponse.class);
             if(response.getBody() != null){
                 this.loggedInUser = response.getBody().user;
                 return true;

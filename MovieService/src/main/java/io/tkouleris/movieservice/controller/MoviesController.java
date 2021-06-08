@@ -6,7 +6,6 @@ import io.tkouleris.movieservice.dto.response.RatedMovie;
 import io.tkouleris.movieservice.entity.Movie;
 import io.tkouleris.movieservice.entity.Rating;
 import io.tkouleris.movieservice.repository.IMovieRepository;
-import io.tkouleris.movieservice.service.Authentication;
 import io.tkouleris.movieservice.service.LoggedUserService;
 import io.tkouleris.movieservice.service.MovieService;
 import io.tkouleris.movieservice.service.RatingService;
@@ -35,6 +34,9 @@ public class MoviesController {
         this.movieService = movieService;
     }
 
+    /**
+     * @return ResponseEntity<Object>
+     */
     @GetMapping(path="/rated", produces = "application/json")
     public ResponseEntity<Object> getRatedMovies() throws IOException {
         RatingsResponse ratings = ratingService.getAll();

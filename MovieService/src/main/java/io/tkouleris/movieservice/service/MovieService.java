@@ -20,6 +20,7 @@ public class MovieService {
     private final IMovieRepository movieRepository;
     private final RatingService ratingService;
 
+
     public MovieService(IMovieRepository movieRepository, RatingService ratingService){
         this.movieRepository = movieRepository;
         this.ratingService = ratingService;
@@ -29,6 +30,12 @@ public class MovieService {
         return this.movieRepository.findById(id).orElse(null);
     }
 
+
+    /**
+     * This method adds a movie in the database when the movie does not exist
+     * @param movie The movie that you want to add
+     * @return The newly inserted movie
+     */
     public Movie addMovie(Movie movie){
         Movie db_movie = movieRepository.findMovieByTitle(movie.getTitle()).orElse(null);
         if(db_movie != null){
@@ -39,6 +46,9 @@ public class MovieService {
     }
 
 
+    /**
+     * @return List<Movie>
+     */
     public List<Movie> getUnratedMovies() throws IOException {
         List<Movie> unratedMovies = new ArrayList<>();
 
@@ -47,12 +57,7 @@ public class MovieService {
 
         if(ratings.data == null){
             return unratedMovies;
-//            ApiResponse apiResponse = new ApiResponse();
-//            apiResponse.setData(movies);
-//            apiResponse.setMessage("Unrated movies");
-//            return new ResponseEntity<>(apiResponse.getBodyResponse(), HttpStatus.OK);
         }
-
 
         List<Movie> excludedMovies = new ArrayList<>();
         for (Rating rating : ratings.data) {
@@ -63,7 +68,6 @@ public class MovieService {
             }
         }
 
-
         for(Movie movie : movies){
             boolean isRated = false;
             for(Movie excludedMovie: excludedMovies){
@@ -73,9 +77,6 @@ public class MovieService {
                 }
             }
             if(!isRated){
-//                Movie unratedMovie = new Movie();
-//                unratedMovie.id = movie.getId();
-//                unratedMovie.title = movie.getTitle();
                 unratedMovies.add(movie);
             }
         }

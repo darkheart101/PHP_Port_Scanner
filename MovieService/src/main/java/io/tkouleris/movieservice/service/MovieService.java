@@ -1,19 +1,85 @@
 package io.tkouleris.movieservice.service;
 
+import io.tkouleris.movieservice.dto.otherResponse.RatingsResponse;
+import io.tkouleris.movieservice.dto.response.ApiResponse;
+import io.tkouleris.movieservice.dto.response.RatedMovie;
 import io.tkouleris.movieservice.entity.Movie;
+import io.tkouleris.movieservice.entity.Rating;
 import io.tkouleris.movieservice.repository.IMovieRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class MovieService {
 
     private final IMovieRepository movieRepository;
+    private final RatingService ratingService;
 
-    public MovieService(IMovieRepository movieRepository){
+    public MovieService(IMovieRepository movieRepository, RatingService ratingService){
         this.movieRepository = movieRepository;
+        this.ratingService = ratingService;
     }
 
     public Movie getMovie(long id){
         return this.movieRepository.findById(id).orElse(null);
+    }
+
+    public Movie addMovie(Movie movie){
+        Movie db_movie = movieRepository.findMovieByTitle(movie.getTitle()).orElse(null);
+        if(db_movie != null){
+            return null;
+        }
+
+        return movieRepository.save(movie);
+    }
+
+
+    public List<Movie> getUnratedMovies() throws IOException {
+        List<Movie> unratedMovies = new ArrayList<>();
+
+        List<Movie> movies = (List<Movie>) movieRepository.findAll();
+        RatingsResponse ratings = this.ratingService.getAll();
+
+        if(ratings.data == null){
+            return unratedMovies;
+//            ApiResponse apiResponse = new ApiResponse();
+//            apiResponse.setData(movies);
+//            apiResponse.setMessage("Unrated movies");
+//            return new ResponseEntity<>(apiResponse.getBodyResponse(), HttpStatus.OK);
+        }
+
+
+        List<Movie> excludedMovies = new ArrayList<>();
+        for (Rating rating : ratings.data) {
+            for (Movie movie : movies) {
+                if(rating.getMovie_id() == movie.getId()){
+                    excludedMovies.add(movie);
+                }
+            }
+        }
+
+
+        for(Movie movie : movies){
+            boolean isRated = false;
+            for(Movie excludedMovie: excludedMovies){
+                if(movie.getId() == excludedMovie.getId()){
+                    isRated = true;
+                    break;
+                }
+            }
+            if(!isRated){
+//                Movie unratedMovie = new Movie();
+//                unratedMovie.id = movie.getId();
+//                unratedMovie.title = movie.getTitle();
+                unratedMovies.add(movie);
+            }
+        }
+
+        return unratedMovies;
     }
 }

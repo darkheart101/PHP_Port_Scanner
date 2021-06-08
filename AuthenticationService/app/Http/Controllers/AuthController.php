@@ -23,7 +23,8 @@ class AuthController extends Controller
             [
                 'id'=>$user->id,
                 'name'=>$user->name,
-                'token'=>$token
+                'token'=>$token,
+                'is_admin'=>$user->is_admin
             ]
         );
     }

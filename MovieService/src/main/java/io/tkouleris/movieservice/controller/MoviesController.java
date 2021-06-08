@@ -6,13 +6,13 @@ import io.tkouleris.movieservice.dto.response.RatedMovie;
 import io.tkouleris.movieservice.entity.Movie;
 import io.tkouleris.movieservice.entity.Rating;
 import io.tkouleris.movieservice.repository.IMovieRepository;
+import io.tkouleris.movieservice.service.Authentication;
+import io.tkouleris.movieservice.service.LoggedUserService;
 import io.tkouleris.movieservice.service.MovieService;
 import io.tkouleris.movieservice.service.RatingService;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -67,44 +67,10 @@ public class MoviesController {
 
     @GetMapping(path="/unrated", produces = "application/json")
     public ResponseEntity<Object> getUnratedMovies() throws IOException {
-        List<Movie> movies = (List<Movie>) movieRepository.findAll();
-        RatingsResponse ratings = ratingService.getAll();
+        List<Movie> unratedMovies = movieService.getUnratedMovies();
 
-        if(ratings.data == null){
-            ApiResponse apiResponse = new ApiResponse();
-            apiResponse.setData(movies);
-            apiResponse.setMessage("Unrated movies");
-            return new ResponseEntity<>(apiResponse.getBodyResponse(), HttpStatus.OK);
-        }
-
-        List<RatedMovie> ratedMovies = new ArrayList<>();
-        List<Movie> excludedMovies = new ArrayList<>();
-        for (Rating rating : ratings.data) {
-            for (Movie movie : movies) {
-                if(rating.getMovie_id() == movie.getId()){
-                    excludedMovies.add(movie);
-                }
-            }
-        }
-
-
-        for(Movie movie : movies){
-            boolean isRated = false;
-            for(Movie excludedMovie: excludedMovies){
-                if(movie.getId() == excludedMovie.getId()){
-                    isRated = true;
-                    break;
-                }
-            }
-            if(!isRated){
-                RatedMovie ratedMovie = new RatedMovie();
-                ratedMovie.id = movie.getId();
-                ratedMovie.title = movie.getTitle();
-                ratedMovies.add(ratedMovie);
-            }
-        }
         ApiResponse apiResponse = new ApiResponse();
-        apiResponse.setData(ratedMovies);
+        apiResponse.setData(unratedMovies);
         apiResponse.setMessage("Unrated movies");
         return new ResponseEntity<>(apiResponse.getBodyResponse(), HttpStatus.OK);
     }
@@ -131,6 +97,33 @@ public class MoviesController {
         apiResponse.setData(movie);
         apiResponse.setMessage("Movie");
         return new ResponseEntity<>(apiResponse.getBodyResponse(), HttpStatus.OK);
+    }
+
+    @PostMapping(path="/add", produces = "application/json")
+    public ResponseEntity<Object> addMovie(@RequestBody Movie movie){
+
+        LoggedUserService loggedInService = LoggedUserService.getInstance();
+        if(userIsNotAdmin(loggedInService)){
+            ApiResponse apiResponse = new ApiResponse();
+            apiResponse.setData(null);
+            apiResponse.setMessage("Access to the requested resource is forbidden");
+            return new ResponseEntity<>(apiResponse.getBodyResponse(), HttpStatus.FORBIDDEN);
+        }
+
+        Movie createdMovie = this.movieService.addMovie(movie);
+        String message = "Movie created";
+        if(createdMovie == null){
+            message = "Movie exists";
+        }
+
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setData(createdMovie);
+        apiResponse.setMessage(message);
+        return new ResponseEntity<>(apiResponse.getBodyResponse(), HttpStatus.OK);
+    }
+
+    private boolean userIsNotAdmin(LoggedUserService loggedInService) {
+        return loggedInService.getLoggedInUser().getIs_admin() != 1;
     }
 }
 

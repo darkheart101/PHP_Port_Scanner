@@ -4,11 +4,20 @@ public class User {
     private long id;
     private String name;
     private String email;
+    private int is_admin;
 
     public User(long id, String name, String email) {
         this.id = id;
         this.name = name;
         this.email = email;
+    }
+
+    public int getIs_admin() {
+        return is_admin;
+    }
+
+    public void setIs_admin(int is_admin) {
+        this.is_admin = is_admin;
     }
 
     public User() {

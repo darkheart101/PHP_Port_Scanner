@@ -20,12 +20,12 @@ public class RatingFallbackService {
         this.cacheService = cacheService;
     }
 
-    public RatingsResponse getFallbackMovie(long movie_id) throws FileNotFoundException, JsonProcessingException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+    public RatingsResponse getFallbackMovie(long movie_id) throws FileNotFoundException, JsonProcessingException {
         System.out.println("========================= FALLBACK MOVIE ================================");
         LoggedUserService loggedUserService = LoggedUserService.getInstance();
         User user = loggedUserService.getLoggedInUser();
         Rating[] ratings = new Rating[0];
-        ratings = this.cacheService.getKey(user.getId() +"_"+ movie_id +"_movie_rating", ratings, Rating[].class);
+        ratings = this.cacheService.getDataOfKey(user.getId() +"_"+ movie_id +"_movie_rating", ratings, Rating[].class);
 
         RatingsResponse ratingsResponse = new RatingsResponse();
         ratingsResponse.data = new ArrayList<>();
@@ -35,12 +35,12 @@ public class RatingFallbackService {
         return ratingsResponse;
     }
 
-    public RatingsResponse getFallbackAllMovies() throws FileNotFoundException, JsonProcessingException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+    public RatingsResponse getFallbackAllMovies() throws FileNotFoundException, JsonProcessingException{
         System.out.println("========================= FALLBACK ================================");
         LoggedUserService loggedUserService = LoggedUserService.getInstance();
         User user = loggedUserService.getLoggedInUser();
         Rating[] ratings = new Rating[0];
-        ratings = this.cacheService.getKey(user.getId() + "_all_ratings", ratings, Rating[].class);
+        ratings = this.cacheService.getDataOfKey(user.getId() + "_all_ratings", ratings, Rating[].class);
         RatingsResponse ratingsResponse = new RatingsResponse();
         ratingsResponse.data = new ArrayList<>();
         ratingsResponse.data.addAll(Arrays.asList(ratings));

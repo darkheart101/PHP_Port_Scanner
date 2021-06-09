@@ -17,10 +17,18 @@ public class LoggedUserService {
         return LoggedUserService.instance;
     }
 
+    /**
+     * Sets the user the made the request
+     * @param loggedInUser The user the made the request
+     */
     public void setLoggedInUser(User loggedInUser) {
         LoggedUserService.instance.loggedInUser = loggedInUser;
     }
 
+    /**
+     * Gets the user that made the request
+     * @return the user that made the request
+     */
     public User getLoggedInUser() {
         return LoggedUserService.instance.loggedInUser;
     }

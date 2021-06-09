@@ -28,8 +28,12 @@ public class RatingService {
         this.ratingFallbackService = ratingFallbackService;
     }
 
-
-//    @HystrixCommand(fallbackMethod = "getFallbackAllMovies")
+    /**
+     * Gets all the ratings from the rating service, caches it data and returns the data
+     * @return A RatingResponse object with the data
+     * @throws IOException When cannot write on the cache file
+     */
+    @HystrixCommand(fallbackMethod = "getFallbackAllMovies")
     public RatingsResponse getAll() throws IOException {
         String token = getToken();
         var entity = this.setHeaders(token);
@@ -46,6 +50,12 @@ public class RatingService {
         return response.getBody();
     }
 
+    /**
+     * Gets back the rating of the movie.
+     * @param movie_id the movie id that the user wants the rating
+     * @return Movie object with the details
+     * @throws IOException When cannot save the cache file
+     */
     @HystrixCommand(fallbackMethod = "getFallbackMovie")
     public RatingsResponse getMovieRating(long movie_id) throws IOException {
         String token = getToken();
@@ -63,11 +73,24 @@ public class RatingService {
         return response.getBody();
     }
 
-    public RatingsResponse getFallbackAllMovies() throws FileNotFoundException, JsonProcessingException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+    /**
+     * Hystrix fallback function when getAll fails
+     * @return The cached data
+     * @throws FileNotFoundException when cache file not found
+     * @throws JsonProcessingException when cached data cannot be read
+     */
+    public RatingsResponse getFallbackAllMovies() throws FileNotFoundException, JsonProcessingException{
         return this.ratingFallbackService.getFallbackAllMovies();
     }
 
-    public RatingsResponse getFallbackMovie(long movie_id) throws FileNotFoundException, JsonProcessingException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+    /**
+     * Hystrix fallback function when getMovieRating fails
+     * @param movie_id the id of the movie you need data
+     * @return cached data
+     * @throws FileNotFoundException when cannot read the cache file
+     * @throws JsonProcessingException when cached data cannot be read
+     */
+    public RatingsResponse getFallbackMovie(long movie_id) throws FileNotFoundException, JsonProcessingException{
         return this.ratingFallbackService.getFallbackMovie(movie_id);
     }
 

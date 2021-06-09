@@ -21,6 +21,10 @@ public class Authentication {
         this.authBaseUrl = authBaseUrl;
     }
 
+    /**
+     * Asks the Auth Service if the token is valid
+     * @return true or false
+     */
     public boolean verify() {
         String token = this.getToken();
         var entity = this.setHeaders(token);
@@ -39,6 +43,10 @@ public class Authentication {
         }
     }
 
+    /**
+     * Gets the token from the request
+     * @return token from the request
+     */
     public String getToken() {
         return ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest().getHeader("Authorization");
     }
@@ -50,6 +58,10 @@ public class Authentication {
         return new HttpEntity(headers);
     }
 
+    /**
+     *
+     * @return the logged in user
+     */
     public User getLoggedInUser() {
         return this.loggedInUser;
     }

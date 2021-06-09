@@ -1,13 +1,9 @@
 package io.tkouleris.movieservice.service;
 
 import io.tkouleris.movieservice.dto.otherResponse.RatingsResponse;
-import io.tkouleris.movieservice.dto.response.ApiResponse;
-import io.tkouleris.movieservice.dto.response.RatedMovie;
 import io.tkouleris.movieservice.entity.Movie;
 import io.tkouleris.movieservice.entity.Rating;
 import io.tkouleris.movieservice.repository.IMovieRepository;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -47,6 +43,7 @@ public class MovieService {
 
 
     /**
+     * Gets all the movies that the user not rated yet
      * @return List<Movie>
      */
     public List<Movie> getUnratedMovies() throws IOException {

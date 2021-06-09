@@ -2,7 +2,6 @@ package io.tkouleris.ratingsservice.service;
 
 import io.tkouleris.ratingsservice.dto.otherResponse.MovieResponse;
 import io.tkouleris.ratingsservice.dto.request.RatingDto;
-import io.tkouleris.ratingsservice.entity.Movie;
 import io.tkouleris.ratingsservice.entity.Rating;
 import io.tkouleris.ratingsservice.entity.User;
 import io.tkouleris.ratingsservice.exception.NotFoundException;
@@ -24,7 +23,6 @@ public class RatingService {
 
         MovieResponse movieResponse = this.movieService.getMovie(ratingDto.movieId);
         if(movieResponse.data == null){
-            System.out.println("NOT FOUND!!!!!!!!!!!!!!!!!!!!!!!!");
             throw new NotFoundException("Movie not found");
         }
         Rating rating = this.ratingRepository.findRatingByUserAndMovie(user.getId(), ratingDto.movieId).orElse(null);
